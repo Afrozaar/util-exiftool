@@ -224,4 +224,38 @@ public class ExifTool implements IExifTool {
         }
 
     }
+
+    /**
+     * <pre>
+     *     ObjectNode node = ...;
+     *
+     *     Map<String, String[]> profileKeysMap = ImmutableMap.of(
+     *       "EXIF", new String[] { "ImageDescription" },
+     *       "File", new String[] { "Comment" },
+     *       "XMP", new String[] { "Description", "Title" },
+     *       "IPTC", new String[] { "Caption-Abstract", "Object-Name" }
+     *     );
+     *
+     *     Optional<String> result = exifTool.getFirstValueFromSpecMapping(node, profileKeysMap);
+     </pre>
+     */
+    @Override
+    public Optional<String> getFirstValueFromSpecMapping(ObjectNode json, Map<String, String[]> profileKeysMap) {
+        final Optional<String> first = profileKeysMap.entrySet().stream()
+                .map(entry -> getFirstFieldValue(json.get(entry.getKey()), entry.getValue()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+
+        return first.isPresent() ? Optional.of(first.get()) : Optional.empty();
+    }
+
+    private Optional<String> getFirstFieldValue(JsonNode jsonNode, String... fieldKeys) {
+        final Optional<JsonNode> first = Arrays.stream(fieldKeys)
+                .map(fieldKey -> Optional.ofNullable(jsonNode.get(fieldKey)))
+                .filter(Optional::isPresent).map(Optional::get)
+                .findFirst();
+
+        return first.isPresent() ? Optional.of(first.get().asText()) : Optional.empty();
+    }
 }
