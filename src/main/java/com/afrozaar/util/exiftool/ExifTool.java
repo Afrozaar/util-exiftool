@@ -242,7 +242,10 @@ public class ExifTool implements IExifTool {
     @Override
     public Optional<String> getFirstValueFromSpecMapping(ObjectNode json, Map<String, String[]> profileKeysMap) {
         final Optional<String> first = profileKeysMap.entrySet().stream()
-                .map(entry -> getFirstFieldValue(Optional.ofNullable(json.get(entry.getKey())), entry.getValue()))
+                .map(entry -> {
+                    final Optional<JsonNode> profileNode = Optional.ofNullable(json.get(entry.getKey()));
+                    return profileNode.isPresent() ? getFirstFieldValue(profileNode.get(), entry.getValue()) : Optional.<String>empty();
+                })
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .findFirst();
@@ -250,17 +253,11 @@ public class ExifTool implements IExifTool {
         return first.isPresent() ? Optional.of(first.get()) : Optional.empty();
     }
 
-    private Optional<String> getFirstFieldValue(Optional<JsonNode> jsonNode, String... fieldKeys) {
-        final Optional<JsonNode> first;
-        if (jsonNode.isPresent()) {
-            first = Arrays.stream(fieldKeys)
-                    .map(fieldKey -> Optional.ofNullable(jsonNode.get().get(fieldKey)))
-                    .filter(Optional::isPresent).map(Optional::get)
-                    .findFirst();
-
-        } else {
-            first = Optional.empty();
-        }
+    private Optional<String> getFirstFieldValue(JsonNode profileNode, String... fieldKeys) {
+        final Optional<JsonNode> first = Arrays.stream(fieldKeys)
+                .map(fieldKey -> Optional.ofNullable(profileNode.get(fieldKey)))
+                .filter(Optional::isPresent).map(Optional::get)
+                .findFirst();
 
         return first.isPresent() ? Optional.of(first.get().asText()) : Optional.empty();
     }
