@@ -256,7 +256,9 @@ public class ExifTool implements IExifTool {
     private Optional<String> getFirstFieldValue(JsonNode profileNode, String... fieldKeys) {
         final Optional<JsonNode> first = Arrays.stream(fieldKeys)
                 .map(fieldKey -> Optional.ofNullable(profileNode.get(fieldKey)))
-                .filter(Optional::isPresent).map(Optional::get)
+                .filter(Optional::isPresent)
+                .filter(node -> !node.get().asText().equals(""))
+                .map(Optional::get)
                 .findFirst();
 
         return first.isPresent() ? Optional.of(first.get().asText()) : Optional.empty();
