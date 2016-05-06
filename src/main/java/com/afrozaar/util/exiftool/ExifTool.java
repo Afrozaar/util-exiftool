@@ -237,7 +237,7 @@ public class ExifTool implements IExifTool {
      *     );
      *
      *     Optional<String> result = exifTool.getFirstValueFromSpecMapping(node, profileKeysMap);
-     </pre>
+     * </pre>
      */
     @Override
     public Optional<String> getFirstValueFromSpecMapping(ObjectNode json, Map<String, String[]> profileKeysMap) {
@@ -252,13 +252,13 @@ public class ExifTool implements IExifTool {
 
     private Optional<String> getFirstFieldValue(Optional<JsonNode> jsonNode, String... fieldKeys) {
         final Optional<JsonNode> first;
-        if(jsonNode.isPresent()){
-            first  = Arrays.stream(fieldKeys)
+        if (jsonNode.isPresent()) {
+            first = Arrays.stream(fieldKeys)
                     .map(fieldKey -> Optional.ofNullable(jsonNode.get().get(fieldKey)))
                     .filter(Optional::isPresent).map(Optional::get)
                     .findFirst();
 
-        }else{
+        } else {
             first = Optional.empty();
         }
 
