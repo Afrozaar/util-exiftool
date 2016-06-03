@@ -32,4 +32,6 @@ public interface IExifTool {
     Optional<String> getFirstValueFromSpecMapping(ObjectNode json, Map<String, String[]> profileKeysMap);
 
     JsonNode setTags(String fileLocation, Map<SupportedTag, Object> tagMap) throws ExiftoolException;
+
+    Optional<String> getSpecificValueFromProfile(ObjectNode json, String profile, String desiredFieldKey);
 }

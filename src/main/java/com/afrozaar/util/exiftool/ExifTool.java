@@ -14,7 +14,6 @@ import com.google.common.collect.Sets;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import org.im4java.core.ETOperation;
 import org.im4java.core.ETOps;
 import org.im4java.core.ExiftoolCmd;
@@ -262,5 +261,11 @@ public class ExifTool implements IExifTool {
                 .findFirst();
 
         return first.isPresent() ? Optional.of(first.get().asText()) : Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getSpecificValueFromProfile(ObjectNode json, String profile, String desiredFieldKey) {
+        final Optional<JsonNode> profileNode = Optional.ofNullable(json.get(profile));
+        return profileNode.isPresent() ? Optional.ofNullable(profileNode.get().get(desiredFieldKey).asText()) : Optional.<String>empty();
     }
 }
