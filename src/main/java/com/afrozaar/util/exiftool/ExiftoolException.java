@@ -5,6 +5,11 @@ package com.afrozaar.util.exiftool;
  */
 public class ExiftoolException extends Exception {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = -6102947878706572770L;
+
     public ExiftoolException() {
         super();
     }

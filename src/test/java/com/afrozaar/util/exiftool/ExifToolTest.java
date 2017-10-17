@@ -96,10 +96,11 @@ public class ExifToolTest {
         try {
             final File newTemporaryFile = Files.createTempFile("exiftool-junit", ".php").toFile();
             temporaryLoc = newTemporaryFile.getAbsolutePath();
-            FileWriter fileWriter = new FileWriter(newTemporaryFile);
-            fileWriter.write(TestUtil.randomString(200));
-            fileWriter.flush();
-            exifTool.getTags(temporaryLoc);
+            try (FileWriter fileWriter = new FileWriter(newTemporaryFile)) {
+                fileWriter.write(TestUtil.randomString(200));
+                fileWriter.flush();
+                exifTool.getTags(temporaryLoc);
+            }
         } catch (IOException e) {
             fail();
         } finally {
