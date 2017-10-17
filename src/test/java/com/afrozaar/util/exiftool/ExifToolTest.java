@@ -55,6 +55,7 @@ public class ExifToolTest {
 
         final JsonNode results = exifTool.getTags(location, "");
 
+        System.out.println(results);
         JsonNode jsonNode = results.get(0);
         jsonNode = jsonNode.get("File");
 
