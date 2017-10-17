@@ -14,6 +14,7 @@ import com.google.common.collect.Sets;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import org.im4java.core.ETOperation;
 import org.im4java.core.ETOps;
 import org.im4java.core.ExiftoolCmd;
@@ -44,7 +45,10 @@ public class ExifTool implements IExifTool {
 
     @Override
     public JsonNode getTags(final String... fileLocations) throws ExiftoolException {
-        final ETOps exifOp = new ETOperation().json().groupHeadings("");
+
+        final ETOps exifOp = new ETOperation().json().groupHeadings("").exclude("FileName").exclude("FileModifyDate").exclude("FileAccessDate").exclude(
+                "FileTypeExtension").exclude("FileInodeChangeDate").exclude("FilePermissions").exclude("FileType").exclude("Directory")
+                .exclude("Directory");
 
         final List<String> usableLocations = Arrays.stream(fileLocations)
                 .filter(location -> !location.isEmpty()).collect(Collectors.toList());

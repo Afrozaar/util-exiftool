@@ -45,8 +45,28 @@ public class ExifToolTest {
     public static void cleanup() {
         final Path tmpDir = Paths.get(System.getProperty("java.io.tmpdir"));
         final String[] toDelete = tmpDir.toFile().list((dir, name) -> name.matches("^(junit-pic-|exiftool-junit).*"));
-        LOG.info("removing {}",  Arrays.asList(toDelete));
+        LOG.info("removing {}", Arrays.asList(toDelete));
         Arrays.stream(toDelete).forEach(fileString -> LOG.info("{} deleted: {}", fileString, new File(tmpDir.toFile(), fileString).delete()));
+    }
+
+    @Test
+    public void CheckFileTagsRemoved() throws URISyntaxException, ExiftoolException {
+        final String location = new File(ExifToolTest.class.getResource(TEST_PICTURE).toURI()).getAbsolutePath();
+
+        final JsonNode results = exifTool.getTags(location, "");
+
+        JsonNode jsonNode = results.get(0);
+        jsonNode = jsonNode.get("File");
+
+        assertThat(jsonNode.get("FileName")).isNull();
+        assertThat(jsonNode.get("FileModifyDate")).isNull();
+        assertThat(jsonNode.get("FileAccessDate")).isNull();
+
+        assertThat(jsonNode.get("FileTypeExtension")).isNull();
+        assertThat(jsonNode.get("FileInodeChangeDate")).isNull();
+        assertThat(jsonNode.get("FilePermissions")).isNull();
+        assertThat(jsonNode.get("FileType")).isNull();
+        assertThat(jsonNode.get("Directory")).isNull();
     }
 
     @Test
@@ -111,7 +131,7 @@ public class ExifToolTest {
 
         final JsonNode jsonNode = exifTool.setTags(location, tagMap);
 
-//        Set<Object> possibleMutations = new HashSet<>();
+        //        Set<Object> possibleMutations = new HashSet<>();
 
         Arrays.stream(KnownProfile.values()).forEach(profile -> {
             LOG.info("========= {} ==========", profile);
