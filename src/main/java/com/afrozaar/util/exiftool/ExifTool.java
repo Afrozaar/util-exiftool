@@ -37,6 +37,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ExifTool implements IExifTool {
 
@@ -46,12 +47,24 @@ public class ExifTool implements IExifTool {
     @Override
     public JsonNode getTags(final String... fileLocations) throws ExiftoolException {
 
-        final ETOps exifOp = new ETOperation().json().groupHeadings("").exclude("FileName").exclude("FileModifyDate").exclude("FileAccessDate").exclude(
-                "FileTypeExtension").exclude("FileInodeChangeDate").exclude("FilePermissions").exclude("FileType").exclude("Directory")
-                .exclude("Directory");
+        final ETOps exifOp = new ETOperation().json().groupHeadings("");
 
-        final List<String> usableLocations = Arrays.stream(fileLocations)
-                .filter(location -> !location.isEmpty()).collect(Collectors.toList());
+        final String[] exclusions = {
+                "Directory",
+                "FileAccessDate",
+                "FileInodeChangeDate",
+                "FileName",
+                "FileModifyDate",
+                "FilePermissions",
+                "FileTypeExtension",
+                "FileType",
+        };
+        Stream.of(exclusions).forEach(exifOp::exclude);
+
+
+        final List<String> usableLocations = Stream.of(fileLocations)
+                .filter(location -> !location.isEmpty())
+                .collect(Collectors.toList());
 
         LOG.debug("Retrieving tags for {} files", usableLocations.size());
         usableLocations.forEach(exifOp::addImage);
@@ -126,10 +139,7 @@ public class ExifTool implements IExifTool {
             final Map<String, Object> entriesForProfile = getEntriesForProfile(node, KnownProfile.valueOf(profile.name));
 
             final Consumer<Map.Entry<String, SupportedTag>> entryConsumer = supportedEntry -> {
-                final Optional<Object> o = Optional.ofNullable(entriesForProfile.get(supportedEntry.getKey()));
-                if (o.isPresent()) {
-                    builder.withTag(supportedEntry.getValue(), o.get().toString());
-                }
+                Optional.ofNullable(entriesForProfile.get(supportedEntry.getKey())).ifPresent(o -> builder.withTag(supportedEntry.getValue(), o.toString()));
             };
             final Predicate<Map.Entry<String, SupportedTag>> entryPredicate = supportedEntry -> entriesForProfile.containsKey(supportedEntry.getKey());
 
@@ -264,7 +274,7 @@ public class ExifTool implements IExifTool {
                 .filter(node -> !node.asText().trim().equals(""))
                 .findFirst();
 
-        return first.isPresent() ? Optional.of(first.get().asText()) : Optional.empty();
+        return first.map(JsonNode::asText);
     }
 
     @Override
