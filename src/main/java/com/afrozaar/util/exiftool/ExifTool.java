@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -257,20 +258,19 @@ public class ExifTool implements IExifTool {
         final Optional<String> first = profileKeysMap.entrySet().stream()
                 .map(entry -> {
                     final Optional<JsonNode> profileNode = Optional.ofNullable(json.get(entry.getKey()));
-                    return profileNode.isPresent() ? getFirstFieldValue(profileNode.get(), entry.getValue()) : Optional.<String>empty();
+                    return profileNode.flatMap(node -> getFirstFieldValue(node, entry.getValue()));
                 })
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .findFirst();
 
-        return first.isPresent() ? Optional.of(first.get()) : Optional.empty();
+        return first;
     }
 
     private Optional<String> getFirstFieldValue(JsonNode profileNode, String... fieldKeys) {
         final Optional<JsonNode> first = Arrays.stream(fieldKeys)
-                .map(fieldKey -> Optional.ofNullable(profileNode.get(fieldKey)))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .map(profileNode::get)
+                .filter(Objects::nonNull)
                 .filter(node -> !node.asText().trim().equals(""))
                 .findFirst();
 

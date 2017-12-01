@@ -2,9 +2,6 @@ package com.afrozaar.util.exiftool;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.afrozaar.util.exiftool.Profiles;
-import com.afrozaar.util.exiftool.SupportedTag;
-
 import org.junit.Test;
 
 import java.util.List;

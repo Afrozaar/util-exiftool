@@ -36,21 +36,9 @@ public class Profiles {
     }
 
     static {
-        XMP = aProfile("XMP")
-                .withTag(SupportedTag.Description, "Description")
-                .withTag(SupportedTag.Title, "Title")
-                .withTag(SupportedTag.Creator, "Creator")
-                .withTag(SupportedTag.TransmissionRef, "TransmissionReference")
-                .withTag(SupportedTag.CaptionWriter, "CaptionWriter")
-                .withTag(SupportedTag.Category, "Category")
-                .withTag(SupportedTag.Urgency, "Urgency")
-                .withTag(SupportedTag.AuthorsPosition, "AuthorsPosition")
-                .withTag(SupportedTag.Credit, "Credit")
-                .withTag(SupportedTag.Source, "Source")
-                .withTag(SupportedTag.SupplementalCategories, "SupplementalCategories")
-                .withTag(SupportedTag.City, "City")
-                .withTag(SupportedTag.Country, "Country")
-                .withTag(SupportedTag.Rights, "Rights")
+
+        XMP = Stream.of(SupportedTag.values())
+                .reduce(aProfile("XMP"), Profile.Builder::withTag, Profile.Builder::merge)
                 .build();
 
         /**

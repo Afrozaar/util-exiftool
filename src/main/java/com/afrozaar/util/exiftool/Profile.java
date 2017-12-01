@@ -62,9 +62,17 @@ public class Profile {
             builder.put(tag, representation);
             return this;
         }
+        public Builder withTag(SupportedTag tag) {
+            return withTag(tag, tag.name());
+        }
 
         public Profile build() {
             return new Profile(name, builder.build());
+        }
+
+        public Builder merge(Builder otherBuilder) {
+            this.builder.putAll(otherBuilder.builder.build());
+            return this;
         }
     }
 }
